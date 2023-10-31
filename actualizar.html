@@ -6,7 +6,16 @@
 <body>
     <h1>Actualizar Producto</h1>
 
-    <form id="productForm">
+    <table id="productTable">
+        <tr>
+            <th>Nombre del Producto</th>
+            <th>Precio</th>
+            <th>Descripción</th>
+            <th>Editar</th>
+        </tr>
+    </table>
+
+    <form id="productForm" style="display: none;">
         <input type="hidden" id="productId" name="productId">
         
         <label for="nombre">Nombre del Producto:</label>
@@ -18,36 +27,49 @@
         <label for="descripcion">Descripción:</label>
         <input type="text" id="descripcion" name="descripcion" required>
 
-        <button type="button" id="actualizar">Actualizar</button>
+        <button type="button" id="guardar">Guardar</button>
         <button type="button" id="eliminar">Eliminar</button>
     </form>
 
     <script>
+        const productTable = document.getElementById('productTable');
+        const productForm = document.getElementById('productForm');
         const productIdInput = document.getElementById('productId');
         const nombreInput = document.getElementById('nombre');
         const precioInput = document.getElementById('precio');
         const descripcionInput = document.getElementById('descripcion');
-        const productForm = document.getElementById('productForm');
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const productName = urlParams.get('nombre');
+        // Función para cargar la lista de productos
+        function cargarProductos() {
+            fetch('https://siaweb-nodejs.carlos-reneren7.repl.co/productos')
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(producto => {
+                        const fila = productTable.insertRow();
+                        fila.insertCell(0).textContent = producto.nombre;
+                        fila.insertCell(1).textContent = producto.precio;
+                        fila.insertCell(2).textContent = producto.descripcion;
+                        const editarBoton = document.createElement('button');
+                        editarBoton.textContent = 'Editar';
+                        editarBoton.addEventListener('click', () => editarProducto(producto));
+                        fila.insertCell(3).appendChild(editarBoton);
+                    });
+                })
+                .catch(error => console.error(error));
+        }
 
-        fetch(`https://siaweb-nodejs.carlos-reneren7.repl.co/productos?nombre=${productName}`)
-            .then(response => response.json())
-            .then(product => {
-                if (product.id) {
-                    productIdInput.value = product.id;
-                    nombreInput.value = product.nombre;
-                    precioInput.value = product.precio;
-                    descripcionInput.value = product.descripcion;
-                } else {
-                    alert('No se encontró un producto con ese nombre.');
-                    window.location.href = 'index.html';
-                }
-            })
-            .catch(error => console.error(error));
+        // Función para editar un producto
+        function editarProducto(producto) {
+            productForm.style.display = 'block';
+            nombreInput.value = producto.nombre;
+            precioInput.value = producto.precio;
+            descripcionInput.value = producto.descripcion;
+            productIdInput.value = producto.id;
+        }
 
-        document.getElementById('actualizar').addEventListener('click', () => {
+        cargarProductos();
+
+        document.getElementById('guardar').addEventListener('click', () => {
             const productId = productIdInput.value;
             const nombre = nombreInput.value;
             const precio = precioInput.value;
@@ -71,7 +93,7 @@
                 .then(response => {
                     if (response.status === 200) {
                         alert('Producto actualizado con éxito.');
-                        window.location.href = 'index.html';
+                        window.location.reload();
                     } else {
                         alert('Hubo un error al actualizar el producto.');
                     }
@@ -90,7 +112,7 @@
                 .then(response => {
                     if (response.status === 204) {
                         alert('Producto eliminado con éxito.');
-                        window.location.href = 'index.html';
+                        window.location.reload();
                     } else {
                         alert('Hubo un error al eliminar el producto.');
                     }
