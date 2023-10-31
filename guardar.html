@@ -1,1 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Agregar Producto</title>
+</head>
+<body>
+    <h1>Agregar Producto</h1>
+
+    <form id="productForm">
+        <label for="nombre">Nombre del Producto:</label>
+        <input type="text" id="nombre" name="nombre" required>
+        <div id="nombreError" style="color: red;"></div>
+        
+        <label for="precio">Precio:</label>
+        <input type="text" id="precio" name="precio" required>
+        <div id="precioError" style="color: red;"></div>
+        
+        <label for="descripcion">Descripción:</label>
+        <input type="text" id="descripcion" name="descripcion" required>
+
+        <button type="button" id="guardar">Guardar</button>
+        <button type="button" id="cancelar">Cancelar</button>
+    </form>
+
+    <script>
+        const nombreInput = document.getElementById('nombre');
+        const precioInput = document.getElementById('precio');
+        const nombreError = document.getElementById('nombreError');
+        const precioError = document.getElementById('precioError');
+        const productForm = document.getElementById('productForm');
+        precioInput.addEventListener('input', () => {
+            const precioValue = precioInput.value;
+            if (!/^\d+(\.\d{1,2})?$/.test(precioValue)) {
+                precioError.textContent = 'El precio debe ser un valor numérico válido (p. ej., 123 o 123.45)';
+            } else {
+                precioError.textContent = '';
+            }
+        });
+        document.getElementById('guardar').addEventListener('click', () => {
+            const nombreValue = nombreInput.value;
+            const precioValue = precioInput.value;
+            const descripcionValue = document.getElementById('descripcion').value;
+
+            if (precioError.textContent === '' && nombreValue !== '' && precioValue !== '') {
+                // Construye el objeto de producto
+                const nuevoProducto = {
+                    nombre: nombreValue,
+                    precio: precioValue,
+                    descripcion: descripcionValue,
+                };
+                fetch('https://siaweb-nodejs.carlos-reneren7.repl.co/productos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(nuevoProducto),
+                })
+                .then(response => {
+                    if (response.status === 201) {
+                        alert('Producto agregado con éxito.');
+                        window.location.href = 'index.html';
+                    } else {
+                        alert('Hubo un error al agregar el producto.');
+                    }
+                })
+                .catch(error => console.error(error));
+            }
+        });
+        document.getElementById('cancelar').addEventListener('click', () => {
+            window.location.href = 'index.html'; // Redirige de vuelta al index
+        });
+    </script>
+</body>
+</html>
 
