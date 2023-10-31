@@ -28,6 +28,7 @@
         const nombreError = document.getElementById('nombreError');
         const precioError = document.getElementById('precioError');
         const productForm = document.getElementById('productForm');
+        
         precioInput.addEventListener('input', () => {
             const precioValue = precioInput.value;
             if (!/^\d+(\.\d{1,2})?$/.test(precioValue)) {
@@ -40,31 +41,42 @@
             const nombreValue = nombreInput.value;
             const precioValue = precioInput.value;
             const descripcionValue = document.getElementById('descripcion').value;
-
-            if (precioError.textContent === '' && nombreValue !== '' && precioValue !== '') {
-                // Construye el objeto de producto
-                const nuevoProducto = {
-                    nombre: nombreValue,
-                    precio: precioValue,
-                    descripcion: descripcionValue,
-                };
-                fetch('https://siaweb-nodejs.carlos-reneren7.repl.co/productos', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(nuevoProducto),
-                })
-                .then(response => {
-                    if (response.status === 201) {
-                        alert('Producto agregado con éxito.');
-                        window.location.href = 'index.html';
+            fetch('https://siaweb-nodejs.carlos-reneren7.repl.co/productos')
+                .then(response => response.json())
+                .then(data => {
+                    const productoExistente = data.find(producto => producto.nombre === nombreValue);
+                    if (productoExistente) {
+                        nombreError.textContent = 'El producto ya existe.';
                     } else {
-                        alert('Hubo un error al agregar el producto.');
+                        nombreError.textContent = '';
+
+                        if (precioError.textContent === '' && nombreValue !== '' && precioValue !== '') {
+                            const nuevoProducto = {
+                                nombre: nombreValue,
+                                precio: precioValue,
+                                descripcion: descripcionValue,
+                            };
+
+                            fetch('https://siaweb-nodejs.carlos-reneren7.repl.co/productos', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify(nuevoProducto),
+                            })
+                            .then(response => {
+                                if (response.status === 201) {
+                                    alert('Producto agregado con éxito.');
+                                    window.location.href = 'index.html';
+                                } else {
+                                    alert('Hubo un error al agregar el producto.');
+                                }
+                            })
+                            .catch(error => console.error(error));
+                        }
                     }
                 })
                 .catch(error => console.error(error));
-            }
         });
         document.getElementById('cancelar').addEventListener('click', () => {
             window.location.href = 'index.html'; // Redirige de vuelta al index
@@ -72,4 +84,3 @@
     </script>
 </body>
 </html>
-

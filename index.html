@@ -10,11 +10,11 @@
             <th>Nombre</th>
             <th>Precio</th>
             <th>Descripción</th>
-            <th>Actualizar</th>
         </tr>
     </table>
     
-    <button><a href="agregar.html">Agregar Producto</a></button>
+    <button><a href="guardar.html">Agregar Producto</a></button>
+    <button><a href="actualizar.html">Actualizar Producto</a></button>
 
     <script>
         function cargarDatos() {
@@ -28,12 +28,6 @@
                         fila.insertCell(0).textContent = producto.nombre;
                         fila.insertCell(1).textContent = producto.precio;
                         fila.insertCell(2).textContent = producto.descripcion;
-                        const botonActualizar = document.createElement('button');
-                        botonActualizar.textContent = 'Actualizar';
-                        botonActualizar.addEventListener('click', function() {
-                            window.location.href = 'actualizar.html?id=' + producto.id;
-                        });
-                        fila.insertCell(3).appendChild(botonActualizar);
                     });
                 })
                 .catch(error => console.error(error));
@@ -42,4 +36,5 @@
     </script>
 </body>
 </html>
+
 
