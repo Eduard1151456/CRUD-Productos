@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Productos</title>
+</head>
+<body>
+    <h1>Lista de Productos</h1>
+    <table>
+        <tr>
+            <th>Nombre</th>
+            <th>Precio</th>
+            <th>Descripción</th>
+            <th>Actualizar</th>
+        </tr>
+    </table>
+    
+    <button><a href="agregar.html">Agregar Producto</a></button>
+
+    <script>
+        function cargarDatos() {
+            fetch('https://siaweb-nodejs.carlos-reneren7.repl.co/productos')
+                .then(response => response.json())
+                .then(data => {
+                    const tabla = document.querySelector('table');
+
+                    data.forEach(producto => {
+                        const fila = tabla.insertRow();
+                        fila.insertCell(0).textContent = producto.nombre;
+                        fila.insertCell(1).textContent = producto.precio;
+                        fila.insertCell(2).textContent = producto.descripcion;
+                        const botonActualizar = document.createElement('button');
+                        botonActualizar.textContent = 'Actualizar';
+                        botonActualizar.addEventListener('click', function() {
+                            window.location.href = 'actualizar.html?id=' + producto.id;
+                        });
+                        fila.insertCell(3).appendChild(botonActualizar);
+                    });
+                })
+                .catch(error => console.error(error));
+        }
+        window.onload = cargarDatos;
+    </script>
+</body>
+</html>
+
